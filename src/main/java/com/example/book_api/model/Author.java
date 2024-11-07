@@ -1,12 +1,13 @@
 package com.example.book_api.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Data
+@AllArgsConstructor 
 public class Author {
 
   @Id

@@ -1,11 +1,13 @@
 package com.example.book_api.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 @Entity
 @Data
+@AllArgsConstructor 
 public class Book {
 
   @Id
@@ -22,5 +24,5 @@ public class Book {
 
   @NotEmpty(message = "ISBN is required")
   @Size(max = 50)
-  private Double isbn;
+  private String isbn;
 }
