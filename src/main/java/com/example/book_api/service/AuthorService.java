@@ -1,5 +1,7 @@
 package com.example.book_api.service;
 
+import com.example.book_api.dto.ApiResponse;
+import com.example.book_api.exception.AuthenticationFailedException;
 import com.example.book_api.model.Author;
 import com.example.book_api.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,26 +18,35 @@ public class AuthorService {
     private JWTService jwtService;
 
     @Autowired
-    AuthenticationManager authManager;
+    private AuthenticationManager authManager;
 
     @Autowired
     private AuthorRepository authorRepository;
 
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-
-    public Author register(Author author) {
+    // Register a new author
+    public ApiResponse<Author> register(Author author) {
         author.setPassword(encoder.encode(author.getPassword()));
-        authorRepository.save(author);
-        return author;
+        Author savedAuthor = authorRepository.save(author);
+        return new ApiResponse<>(true, "Signup successful", savedAuthor);
     }
 
-    public String verify(Author author) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(author.getEmail(), author.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(author.getEmail());
-        } else {
-            return "Failed";
+    // Verify author login credentials
+    public ApiResponse<String> verify(Author author) {
+        try {
+            Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(author.getEmail(), author.getPassword())
+            );
+
+            if (authentication.isAuthenticated()) {
+                String token = jwtService.generateToken(author.getEmail());
+                return new ApiResponse<>(true, "Login successful", token);
+            } else {
+                throw new AuthenticationFailedException("Invalid credentials");
+            }
+        } catch (Exception e) {
+            throw new AuthenticationFailedException("Email or Password incorrect.");
         }
     }
 }

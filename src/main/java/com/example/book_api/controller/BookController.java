@@ -1,35 +1,47 @@
 package com.example.book_api.controller;
 
+import com.example.book_api.dto.ApiResponse;
 import com.example.book_api.model.Book;
-import com.example.book_api.repository.BookRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.example.book_api.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
+@RequestMapping("/books")
 public class BookController {
 
     @Autowired
-    private BookRepository bookRepository; 
+    private BookService bookService;
 
-    @GetMapping("/books")
-    public List<Book> getBooks() {
-        return bookRepository.findAll();
+    @GetMapping
+    public ApiResponse<List<Book>> getAllBooks() {
+        return bookService.getAllBooks();
     }
 
-    @GetMapping("/csrf-token")
-    public CsrfToken getCsrfToken(HttpServletRequest request) {
-        return (CsrfToken) request.getAttribute("_csrf");
+    @GetMapping("/{id}")
+    public ApiResponse<Book> getBookById(@PathVariable Long id) {
+        return bookService.getBookById(id);
     }
 
-    @PostMapping("/books")
-    public Book addBook(@RequestBody Book book) {
-        return bookRepository.save(book);
+    @PostMapping
+    public ApiResponse<Book> addBook(@RequestBody Book book) {
+        return bookService.addBook(book);
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<Book> updateBook(@PathVariable Long id, @RequestBody Book updatedBook) {
+        return bookService.updateBook(id, updatedBook);
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> deleteBook(@PathVariable Long id) {
+        return bookService.deleteBook(id);
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<List<Book>> searchBooks(@RequestParam String query) {
+        return bookService.searchBooks(query);
     }
 }

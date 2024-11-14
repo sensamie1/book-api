@@ -1,28 +1,26 @@
 package com.example.book_api.controller;
 
+import com.example.book_api.dto.ApiResponse;
 import com.example.book_api.model.Author;
 import com.example.book_api.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AuthorController {
 
     @Autowired
-    private AuthorService service;
+    private AuthorService authorService;
 
-
+    // Register a new author
     @PostMapping("/register")
-    public Author register(@RequestBody Author author) {
-        return service.register(author);
-
+    public ApiResponse<Author> register(@RequestBody Author author) {
+        return authorService.register(author);
     }
 
+    // Login an author
     @PostMapping("/login")
-    public String login(@RequestBody Author author) {
-
-        return service.verify(author);
+    public ApiResponse<String> login(@RequestBody Author author) {
+        return authorService.verify(author);
     }
 }
